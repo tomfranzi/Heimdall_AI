@@ -1,25 +1,31 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace Heimdall_AI
+namespace Heimdall_AI;
+
+public static class MauiProgram
 {
-    public static class MauiProgram
+    public static MauiApp CreateMauiApp()
     {
-        public static MauiApp CreateMauiApp()
-        {
-            var builder = MauiApp.CreateBuilder();
-            builder
-                .UseMauiApp<App>()
-                .ConfigureFonts(fonts =>
-                {
-                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                    fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-                });
+        var builder = MauiApp.CreateBuilder();
+        builder
+            .UseMauiApp<App>()
+            .ConfigureFonts(fonts =>
+            {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+            });
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+        builder.Logging.AddDebug();
 #endif
 
-            return builder.Build();
-        }
+        // Ajout de l'injection de dépendances pour nos pages et ViewModels
+        builder.Services.AddTransient<AlertesViewModels>();
+        builder.Services.AddTransient<AlertesPage>();
+
+        builder.Services.AddTransient<SupervisionViewModels>();
+        builder.Services.AddTransient<SupervisionPage>();
+
+        return builder.Build();
     }
 }

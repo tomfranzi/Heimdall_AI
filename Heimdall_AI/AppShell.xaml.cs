@@ -1,10 +1,9 @@
-﻿namespace Heimdall_AI
+﻿namespace Heimdall_AI;
+
+public partial class AppShell : Shell
 {
-    public partial class AppShell : Shell
+    public AppShell()
     {
-        public AppShell()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

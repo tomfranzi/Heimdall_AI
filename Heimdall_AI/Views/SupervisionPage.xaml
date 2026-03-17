@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Heimdall_AI.ViewModels"
+             x:Class="Heimdall_AI.Views.SupervisionPage"
+             Title="Accueil Supervision"
+             BackgroundColor="#0F172A"
+             Shell.NavBarIsVisible="False">
+    <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshDonneesCommand}" RefreshColor="#06B6D4">
+        <ScrollView>
+            <VerticalStackLayout Padding="20" Spacing="25">
+
+                <Grid ColumnDefinitions="*, Auto, Auto" Margin="0,10,0,10">
+                    <Label Grid.Column="0" Text="Accueil Supervision" TextColor="White" FontSize="24" FontAttributes="Bold" VerticalOptions="Center"/>
+                    <Border Grid.Column="1" BackgroundColor="#1E293B" StrokeShape="RoundRectangle 20" StrokeThickness="0" WidthRequest="40" HeightRequest="40" Margin="0,0,10,0">
+                        <Label Text="🔔" HorizontalOptions="Center" VerticalOptions="Center" FontSize="18"/>
+                    </Border>
+                    <Border Grid.Column="2" BackgroundColor="#1E293B" StrokeShape="RoundRectangle 20" StrokeThickness="0" WidthRequest="40" HeightRequest="40">
+                        <Label Text="👤" HorizontalOptions="Center" VerticalOptions="Center" FontSize="18"/>
+                    </Border>
+                </Grid>
+
+                <Border StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="20">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#06B6D4" Offset="0.0" />
+                            <GradientStop Color="#3B82F6" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Grid RowDefinitions="Auto, Auto, Auto" RowSpacing="10">
+                        <Label Grid.Row="0" Text="Statut du Système" TextColor="#E0F2FE" FontSize="14" />
+                        <HorizontalStackLayout Grid.Row="1" Spacing="10" VerticalOptions="Center">
+                            <Ellipse Fill="{Binding CouleurStatut}" WidthRequest="12" HeightRequest="12" VerticalOptions="Center"/>
+                            <Label Text="{Binding StatutSysteme}" TextColor="White" FontSize="28" FontAttributes="Bold" />
+                        </HorizontalStackLayout>
+                        <Label Grid.Row="2" Text="{Binding DerniereMiseAJour, StringFormat='Dernière mise à jour : {0}'}" TextColor="#E0F2FE" FontSize="12" Opacity="0.8"/>
+                    </Grid>
+                </Border>
+
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Actions Rapides" TextColor="White" FontSize="18" FontAttributes="Bold"/>
+                    <Grid ColumnDefinitions="*, *" RowDefinitions="*, *" ColumnSpacing="15" RowSpacing="15">
+
+                        <Border Grid.Row="0" Grid.Column="0" StrokeShape="RoundRectangle 12" StrokeThickness="0" BackgroundColor="#1E293B" Padding="15">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ScanManuelCommand}"/>
+                            </Border.GestureRecognizers>
+                            <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
+                                <Label Text="🔍" FontSize="24" HorizontalOptions="Center"/>
+                                <Label Text="Scan Manuel" TextColor="White" FontSize="14" HorizontalOptions="Center"/>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border Grid.Row="0" Grid.Column="1" StrokeShape="RoundRectangle 12" StrokeThickness="0" BackgroundColor="#1E293B" Padding="15">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding GenererRapportCommand}"/>
+                            </Border.GestureRecognizers>
+                            <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
+                                <Label Text="📄" FontSize="24" HorizontalOptions="Center"/>
+                                <Label Text="Rapport" TextColor="White" FontSize="14" HorizontalOptions="Center"/>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border Grid.Row="1" Grid.Column="0" StrokeShape="RoundRectangle 12" StrokeThickness="0" BackgroundColor="#1E293B" Padding="15">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OuvrirParametresCommand}"/>
+                            </Border.GestureRecognizers>
+                            <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
+                                <Label Text="⚙️" FontSize="24" HorizontalOptions="Center"/>
+                                <Label Text="Paramètres" TextColor="White" FontSize="14" HorizontalOptions="Center"/>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border Grid.Row="1" Grid.Column="1" StrokeShape="RoundRectangle 12" StrokeThickness="0" BackgroundColor="#450a0a" Padding="15">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding DeclencherUrgenceCommand}"/>
+                            </Border.GestureRecognizers>
+                            <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
+                                <Label Text="🚨" FontSize="24" HorizontalOptions="Center"/>
+                                <Label Text="Urgence" TextColor="#F87171" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
+                            </VerticalStackLayout>
+                        </Border>
+
+                    </Grid>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Statistiques Clés" TextColor="White" FontSize="18" FontAttributes="Bold"/>
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
+
+                        <Border Grid.Column="0" StrokeShape="RoundRectangle 12" StrokeThickness="0" BackgroundColor="#1E293B" Padding="15">
+                            <VerticalStackLayout Spacing="10">
+                                <Label Text="Capteurs Actifs" TextColor="#94A3B8" FontSize="12"/>
+                                <HorizontalStackLayout Spacing="5" VerticalOptions="End">
+                                    <Label Text="{Binding CapteursActifs}" TextColor="White" FontSize="24" FontAttributes="Bold"/>
+                                    <Label Text="{Binding CapteursTotal, StringFormat='/ {0}'}" TextColor="#64748B" FontSize="16" Margin="0,0,0,3" VerticalOptions="End"/>
+                                </HorizontalStackLayout>
+                                <ProgressBar Progress="{Binding ProgressionCapteurs}" ProgressColor="#10B981" HeightRequest="6" BackgroundColor="#334155" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border Grid.Column="1" StrokeShape="RoundRectangle 12" StrokeThickness="0" BackgroundColor="#1E293B" Padding="15">
+                            <VerticalStackLayout Spacing="10">
+                                <Label Text="Alertes Récentes" TextColor="#94A3B8" FontSize="12"/>
+                                <HorizontalStackLayout Spacing="10" VerticalOptions="End">
+                                    <Label Text="{Binding NombreAlertes}" TextColor="White" FontSize="24" FontAttributes="Bold"/>
+                                    <Border BackgroundColor="#450a0a" StrokeShape="RoundRectangle 4" StrokeThickness="0" Padding="4,2" VerticalOptions="Center">
+                                        <Label Text="{Binding TendanceAlertes}" TextColor="#F87171" FontSize="10" FontAttributes="Bold"/>
+                                    </Border>
+                                </HorizontalStackLayout>
+                                <BoxView HeightRequest="6" Color="Transparent" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+</ContentPage>
