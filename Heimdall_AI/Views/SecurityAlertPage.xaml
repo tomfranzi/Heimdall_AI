@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Heimdall_AI.Views.SecurityAlertPage"
+             BackgroundColor="#240507"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False">
+
+    <Grid>
+        <BoxView Color="#3A090D" Opacity="0.35" />
+
+        <VerticalStackLayout Padding="24,40,24,26" Spacing="22">
+            <Label Text="HEIMDALL AI"
+                   TextColor="#8B8B8B"
+                   CharacterSpacing="2"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   FontSize="11" />
+
+            <Grid HeightRequest="190" WidthRequest="190" HorizontalOptions="Center">
+                <Ellipse Fill="#5C0E14" WidthRequest="190" HeightRequest="190" Opacity="0.85" />
+                <Ellipse Fill="#EF222A" WidthRequest="130" HeightRequest="130" HorizontalOptions="Center" VerticalOptions="Center" />
+                <Image Source="detector_alarm.svg" WidthRequest="64" HeightRequest="64" HorizontalOptions="Center" VerticalOptions="Center" />
+            </Grid>
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="ALERTE SÉCURITÉ"
+                       TextColor="#FF2A2A"
+                       HorizontalOptions="Center"
+                       FontAttributes="Bold"
+                       FontSize="36" />
+                <Label Text="SON SUSPECT DÉTECTÉ"
+                       TextColor="#F8FAFC"
+                       HorizontalOptions="Center"
+                       FontAttributes="Bold"
+                       FontSize="26" />
+                <Label x:Name="TypeLabel"
+                       Text="BRIS DE VERRE"
+                       TextColor="#FF2A2A"
+                       HorizontalOptions="Center"
+                       FontAttributes="Bold"
+                       FontSize="28" />
+            </VerticalStackLayout>
+
+            <Border Stroke="#5B2025" StrokeThickness="1" BackgroundColor="#3D171A" StrokeShape="RoundRectangle 16" Padding="16,14">
+                <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto" RowSpacing="8" ColumnSpacing="20">
+                    <Label Text="ZONE" TextColor="#B3A9AA" FontSize="14" />
+                    <Label Grid.Column="1" x:Name="LocationLabel" Text="Zone principale" TextColor="#FFFFFF" FontSize="22" FontAttributes="Bold" HorizontalTextAlignment="End" />
+                    <Label Grid.Row="1" Text="HEURE" TextColor="#B3A9AA" FontSize="14" />
+                    <Label Grid.Row="1" Grid.Column="1" x:Name="TimeLabel" Text="À l'instant" TextColor="#FFFFFF" FontSize="22" FontAttributes="Bold" HorizontalTextAlignment="End" />
+                </Grid>
+            </Border>
+
+            <Button Text="Écouter en direct"
+                    Clicked="OnListenLiveClicked"
+                    BackgroundColor="#2D313B"
+                    TextColor="#F8FAFC"
+                    ImageSource="eye_tracking.svg"
+                    FontAttributes="Bold"
+                    CornerRadius="12"
+                    HeightRequest="58" />
+
+            <Button Text="APPELER LES URGENCES"
+                    Clicked="OnCallEmergencyClicked"
+                    BackgroundColor="#FF2328"
+                    TextColor="#FFFFFF"
+                    ImageSource="detector_alarm.svg"
+                    FontAttributes="Bold"
+                    CornerRadius="12"
+                    HeightRequest="62" />
+
+            <Button Text="Ignorer l'alerte"
+                    Clicked="OnDismissClicked"
+                    TextColor="#8B8B8B"
+                    BackgroundColor="Transparent"
+                    FontSize="16" />
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

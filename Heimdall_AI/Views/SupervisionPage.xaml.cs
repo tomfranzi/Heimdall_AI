@@ -37,4 +37,9 @@ public partial class SupervisionPage : ContentPage
 
         pingAnim.Commit(dot, "PingAnim_" + dot.Id, length: 3000, repeat: () => true);
     }
+
+    private async void OnSettingsClicked(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("//ParametresPage");
+    }
 }

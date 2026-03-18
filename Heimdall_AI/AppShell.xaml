@@ -5,17 +5,30 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:Heimdall_AI.Views"
     Shell.FlyoutBehavior="Disabled"
+    
+    Shell.BackgroundColor="#020817"
     Shell.TabBarBackgroundColor="#0F172A"
     Shell.TabBarUnselectedColor="#64748B"
+    Shell.TabBarForegroundColor="#3B82F6"
     Shell.TabBarTitleColor="#3B82F6">
 
+    <ShellContent Route="LoginPage" ContentTemplate="{DataTemplate views:LoginPage}" />
+
     <TabBar>
-        <Tab Title="Accueil">
+        <Tab Title="Accueil" Icon="eye_tracking.svg">
             <ShellContent Route="SupervisionPage" ContentTemplate="{DataTemplate views:SupervisionPage}" />
         </Tab>
 
-        <Tab Title="Alertes">
+        <Tab Title="Surveillance" Icon="analytics.svg">
             <ShellContent Route="AlertesPage" ContentTemplate="{DataTemplate views:AlertesPage}" />
+        </Tab>
+
+        <Tab Title="Historique" Icon="history.svg">
+            <ShellContent Route="HistoriquePage" ContentTemplate="{DataTemplate views:HistoriquePage}" />
+        </Tab>
+
+        <Tab Title="Paramètres" Icon="settings.svg">
+            <ShellContent Route="ParametresPage" ContentTemplate="{DataTemplate views:ParametresPage}" />
         </Tab>
     </TabBar>
 

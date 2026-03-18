@@ -4,48 +4,90 @@
              xmlns:vm="clr-namespace:Heimdall_AI.ViewModels"
              xmlns:models="clr-namespace:Heimdall_AI.Models"
              x:Class="Heimdall_AI.Views.AlertesPage"
-             Title="Alertes"
-             BackgroundColor="#0F172A">
+             BackgroundColor="#020817"
+             Shell.NavBarIsVisible="False">
 
-    <RefreshView IsRefreshing="{Binding IsRefreshing}" 
+    <RefreshView IsRefreshing="{Binding IsRefreshing}"
                  Command="{Binding LoadAlertesCommand}"
                  RefreshColor="#3B82F6">
 
-        <CollectionView ItemsSource="{Binding ListeAlertes}"
-                        SelectionMode="None"
-                        Margin="15">
+        <ScrollView>
+            <VerticalStackLayout Padding="16,18,16,24" Spacing="16">
 
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:Alertes">
-                    <Border StrokeShape="RoundRectangle 12"
-                            StrokeThickness="0"
-                            BackgroundColor="#1E293B"
-                            Margin="0,0,0,12"
-                            Padding="15">
-
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AlertesViewModels}}, Path=AlerteTappedCommand}"
-                                                  CommandParameter="{Binding .}"/>
-                        </Border.GestureRecognizers>
-
-                        <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="*, Auto" RowSpacing="5">
-                            <Label Grid.Row="0" Grid.Column="0" Text="{Binding Titre}" TextColor="White" FontAttributes="Bold" FontSize="16" />
-                            <Border Grid.Row="0" Grid.Column="1" StrokeShape="RoundRectangle 8" BackgroundColor="{Binding CouleurBadge}" Padding="8,4" HorizontalOptions="End">
-                                <Label Text="{Binding Niveau}" TextColor="White" FontSize="12" FontAttributes="Bold"/>
-                            </Border>
-                            <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Description}" TextColor="#94A3B8" FontSize="14" LineBreakMode="WordWrap" />
-                            <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding DateCreation, StringFormat='{0:dd/MM/yyyy HH:mm}'}" TextColor="#64748B" FontSize="12" Margin="0,5,0,0"/>
-                        </Grid>
+                <Grid ColumnDefinitions="Auto,*,Auto" VerticalOptions="Center">
+                    <Border Grid.Column="0" WidthRequest="46" HeightRequest="46" StrokeShape="RoundRectangle 12" StrokeThickness="0" BackgroundColor="#0B2A5E" Padding="11" Margin="0,0,10,0">
+                        <Image Source="shield_person.svg" Aspect="AspectFit" />
                     </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
 
-            <CollectionView.EmptyView>
-                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="10">
-                    <Label Text="✅" FontSize="40" HorizontalOptions="Center" />
-                    <Label Text="Aucune alerte pour le moment" TextColor="#94A3B8" />
-                </VerticalStackLayout>
-            </CollectionView.EmptyView>
-        </CollectionView>
+                    <Label Grid.Column="1" VerticalOptions="Center" FontSize="30" FontAttributes="Bold" CharacterSpacing="0.5">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Heimdall " TextColor="#F8FAFC" />
+                                <Span Text="AI" TextColor="#3B82F6" />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+
+                    <Border Grid.Column="2" BackgroundColor="#0F172A" StrokeShape="RoundRectangle 22" StrokeThickness="1" Stroke="#1E293B" WidthRequest="44" HeightRequest="44" HorizontalOptions="End" VerticalOptions="Center">
+                        <ImageButton Source="settings.svg" Clicked="OnSettingsClicked" WidthRequest="18" HeightRequest="18" BackgroundColor="Transparent" Opacity="0.9" />
+                    </Border>
+                </Grid>
+
+                <Border StrokeShape="RoundRectangle 18" Stroke="#1E3A8A" StrokeThickness="1" BackgroundColor="#0D244A" Padding="14,8" HorizontalOptions="Center">
+                    <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                        <Ellipse Fill="#3B82F6" WidthRequest="10" HeightRequest="10" VerticalOptions="Center" />
+                        <Label Text="{Binding StatutSurveillance}" TextColor="#60A5FA" FontSize="16" FontAttributes="Bold" CharacterSpacing="0.5" />
+                    </HorizontalStackLayout>
+                </Border>
+
+                <Border StrokeShape="RoundRectangle 22" Stroke="#1E293B" StrokeThickness="1" BackgroundColor="#081327" Padding="16">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid HeightRequest="190" ColumnDefinitions="*,*,*,*,*,*,*,*" ColumnSpacing="8" VerticalOptions="End">
+                            <BoxView Grid.ColumnSpan="8" HeightRequest="1" Color="#1E3A8A" VerticalOptions="End" />
+
+                            <Border Grid.Column="0" StrokeThickness="0" BackgroundColor="#3B82F6" WidthRequest="8" HeightRequest="{Binding BarresConfiance[0].Hauteur}" Opacity="{Binding BarresConfiance[0].Opacite}" VerticalOptions="End" StrokeShape="RoundRectangle 6" />
+                            <Border Grid.Column="1" StrokeThickness="0" BackgroundColor="#3B82F6" WidthRequest="8" HeightRequest="{Binding BarresConfiance[1].Hauteur}" Opacity="{Binding BarresConfiance[1].Opacite}" VerticalOptions="End" StrokeShape="RoundRectangle 6" />
+                            <Border Grid.Column="2" StrokeThickness="0" BackgroundColor="#3B82F6" WidthRequest="8" HeightRequest="{Binding BarresConfiance[2].Hauteur}" Opacity="{Binding BarresConfiance[2].Opacite}" VerticalOptions="End" StrokeShape="RoundRectangle 6" />
+                            <Border Grid.Column="3" StrokeThickness="0" BackgroundColor="#3B82F6" WidthRequest="8" HeightRequest="{Binding BarresConfiance[3].Hauteur}" Opacity="{Binding BarresConfiance[3].Opacite}" VerticalOptions="End" StrokeShape="RoundRectangle 6" />
+                            <Border Grid.Column="4" StrokeThickness="0" BackgroundColor="#3B82F6" WidthRequest="8" HeightRequest="{Binding BarresConfiance[4].Hauteur}" Opacity="{Binding BarresConfiance[4].Opacite}" VerticalOptions="End" StrokeShape="RoundRectangle 6" />
+                            <Border Grid.Column="5" StrokeThickness="0" BackgroundColor="#3B82F6" WidthRequest="8" HeightRequest="{Binding BarresConfiance[5].Hauteur}" Opacity="{Binding BarresConfiance[5].Opacite}" VerticalOptions="End" StrokeShape="RoundRectangle 6" />
+                            <Border Grid.Column="6" StrokeThickness="0" BackgroundColor="#3B82F6" WidthRequest="8" HeightRequest="{Binding BarresConfiance[6].Hauteur}" Opacity="{Binding BarresConfiance[6].Opacite}" VerticalOptions="End" StrokeShape="RoundRectangle 6" />
+                            <Border Grid.Column="7" StrokeThickness="0" BackgroundColor="#3B82F6" WidthRequest="8" HeightRequest="{Binding BarresConfiance[7].Hauteur}" Opacity="{Binding BarresConfiance[7].Opacite}" VerticalOptions="End" StrokeShape="RoundRectangle 6" />
+                        </Grid>
+
+                        <Label Text="NIVEAU D'ENTRÉE" TextColor="#64748B" FontSize="10" CharacterSpacing="1" HorizontalOptions="Center" />
+                        <Label Text="{Binding NiveauDbCourant}" TextColor="#3B82F6" FontSize="36" FontAttributes="Bold" HorizontalOptions="Center" />
+                        <Label Text="{Binding NiveauConfianceCourant, StringFormat='Confiance : {0}'}" TextColor="#93C5FD" FontSize="13" HorizontalOptions="Center" />
+                        <Label Text="{Binding TypeAlerteCourante}" TextColor="#94A3B8" FontSize="12" HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border StrokeShape="RoundRectangle 16" Stroke="#1E293B" StrokeThickness="1" BackgroundColor="#0F172A" Padding="14">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="ACTIVITÉ RÉCENTE" TextColor="#64748B" FontSize="12" FontAttributes="Bold" CharacterSpacing="1.2" />
+                            <Label Grid.Column="1" Text="LIVE SYNC" TextColor="#3B82F6" FontSize="11" FontAttributes="Bold" />
+                        </Grid>
+
+                        <CollectionView ItemsSource="{Binding ActiviteRecente}" SelectionMode="None" HeightRequest="166">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="models:Alertes">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" Padding="0,3">
+                                        <Label Text="{Binding HeureCourte}" TextColor="#64748B" FontSize="12" VerticalOptions="Center" />
+                                        <Label Grid.Column="1" Text="{Binding Titre}" TextColor="#E2E8F0" FontSize="13" Margin="10,0,0,0" VerticalOptions="Center" />
+                                        <Label Grid.Column="2" Text="{Binding ConfianceTexte}" TextColor="#22C55E" FontSize="12" FontAttributes="Bold" VerticalOptions="Center" />
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                            <CollectionView.EmptyView>
+                                <Label Text="Aucune alerte historique pour le moment" TextColor="#64748B" HorizontalOptions="Center" Margin="0,18,0,0" />
+                            </CollectionView.EmptyView>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Label Text="Le moteur IA vérifie les signatures sonores localement. Aucune donnée audio brute ne sort de l'appareil." TextColor="#475569" FontSize="12" HorizontalTextAlignment="Center" Margin="8,0,8,0" />
+            </VerticalStackLayout>
+        </ScrollView>
     </RefreshView>
 </ContentPage>

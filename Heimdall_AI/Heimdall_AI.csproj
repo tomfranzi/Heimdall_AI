@@ -47,6 +47,11 @@
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net10.0-android' and '$(Configuration)' == 'Debug'">
+		<EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+		<AndroidFastDeploymentType>None</AndroidFastDeploymentType>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<!-- App Icon -->
 		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
@@ -56,6 +61,7 @@
 
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
+     <MauiImage Include="Resources\Icone\*" />
 		<MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
 		
 		<!-- Custom Fonts -->
@@ -66,17 +72,34 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Maui" Version="14.0.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.30" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+        <PackageReference Include="MQTTnet" Version="4.3.7.1207" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <Compile Update="Views\AlertesPage.xaml.cs">
 	    <DependentUpon>AlertesPage.xaml</DependentUpon>
 	  </Compile>
+      <Compile Update="Views\CreateAccountPage.xaml.cs">
+		<DependentUpon>CreateAccountPage.xaml</DependentUpon>
+	  </Compile>
+      <Compile Update="Views\HistoriquePage.xaml.cs">
+		<DependentUpon>HistoriquePage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\LoginPage.xaml.cs">
+	    <DependentUpon>LoginPage.xaml</DependentUpon>
+	  </Compile>
+    <Compile Update="Views\ParametresPage.xaml.cs">
+		<DependentUpon>ParametresPage.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\SupervisionPage.xaml.cs">
 	    <DependentUpon>SupervisionPage.xaml</DependentUpon>
+	  </Compile>
+      <Compile Update="Views\SecurityAlertPage.xaml.cs">
+		<DependentUpon>SecurityAlertPage.xaml</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 
@@ -84,6 +107,21 @@
 	  <MauiXaml Update="Views\AlertesPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\CreateAccountPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+    <MauiXaml Update="Views\HistoriquePage.xaml">
+		<Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\LoginPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+      <MauiXaml Update="Views\ParametresPage.xaml">
+		<Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+      <MauiXaml Update="Views\SecurityAlertPage.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
 	  <MauiXaml Update="Views\SupervisionPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="clr-namespace:CommunityToolkit.Maui.Behaviors;assembly=CommunityToolkit.Maui"
+             x:Class="Heimdall_AI.Views.ParametresPage"
+             BackgroundColor="#020817"
+             Shell.NavBarIsVisible="False">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16,18,16,30" Spacing="18">
+
+            <Grid ColumnDefinitions="Auto,*,Auto" VerticalOptions="Center">
+                <Border Grid.Column="0" WidthRequest="46" HeightRequest="46" StrokeShape="RoundRectangle 12" StrokeThickness="0" BackgroundColor="#0B2A5E" Padding="11" Margin="0,0,10,0">
+                    <Image Source="shield_person.svg" Aspect="AspectFit" />
+                </Border>
+
+                <Label Grid.Column="1" VerticalOptions="Center" FontSize="30" FontAttributes="Bold" CharacterSpacing="0.5">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Heimdall " TextColor="#F8FAFC" />
+                            <Span Text="AI" TextColor="#3B82F6" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+
+                <Border Grid.Column="2" BackgroundColor="#0F172A" StrokeShape="RoundRectangle 22" StrokeThickness="1" Stroke="#1E293B" WidthRequest="44" HeightRequest="44" HorizontalOptions="End" VerticalOptions="Center">
+                    <ImageButton Source="settings.svg" Clicked="OnSettingsClicked" WidthRequest="18" HeightRequest="18" BackgroundColor="Transparent" Opacity="0.9" />
+                </Border>
+            </Grid>
+
+            <Label Text="Les changements sont enregistrés automatiquement."
+                   TextColor="#60A5FA"
+                   FontSize="12"
+                   HorizontalOptions="End" />
+
+            <VerticalStackLayout Spacing="10">
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Text="SENSIBILITÉ MICRO" TextColor="#64748B" FontSize="12" FontAttributes="Bold" CharacterSpacing="1.2" />
+                    <Label Grid.Column="1" Text="{Binding SensibiliteMicro, StringFormat='{0:F0}%'}" TextColor="#60A5FA" FontSize="22" FontAttributes="Bold" />
+                </Grid>
+
+                <Label Text="Réglage de sensibilité" TextColor="White" FontSize="28" FontAttributes="Bold" />
+
+                <Border StrokeShape="RoundRectangle 14" Stroke="#1E293B" StrokeThickness="1" BackgroundColor="#0F172A" Padding="14">
+                    <VerticalStackLayout Spacing="10">
+                        <Slider Minimum="0" Maximum="100" Value="{Binding SensibiliteMicro}" MinimumTrackColor="#3B82F6" MaximumTrackColor="#334155" ThumbColor="#60A5FA">
+                            <Slider.Behaviors>
+                                <toolkit:EventToCommandBehavior EventName="DragCompleted" Command="{Binding PublierSensibiliteCommand}" />
+                            </Slider.Behaviors>
+                        </Slider>
+                        <Grid ColumnDefinitions="*,*,*">
+                            <Label Text="MIN" TextColor="#64748B" FontSize="10" />
+                            <Label Grid.Column="1" Text="NORMAL" TextColor="#64748B" HorizontalOptions="Center" FontSize="10" />
+                            <Label Grid.Column="2" Text="MAX" TextColor="#64748B" HorizontalOptions="End" FontSize="10" />
+                        </Grid>
+                        <Label Text="Envoie automatiquement la configuration MQTT (heimdall/config) avec noise_gate à chaque changement." TextColor="#94A3B8" FontSize="12" />
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="10">
+                <Label Text="CATÉGORIES SONORES" TextColor="#64748B" FontSize="12" FontAttributes="Bold" CharacterSpacing="1.2" />
+
+                <Border StrokeShape="RoundRectangle 14" Stroke="#1E293B" StrokeThickness="1" BackgroundColor="#0F172A" Padding="0">
+                    <VerticalStackLayout Spacing="0">
+                        <Grid ColumnDefinitions="Auto,*,Auto" Padding="14,12">
+                            <Border Grid.Column="0" BackgroundColor="#2C1730" StrokeThickness="0" StrokeShape="RoundRectangle 9" WidthRequest="34" HeightRequest="34" Padding="8" Margin="0,0,10,0">
+                                <Image Source="broken_image.svg" Aspect="AspectFit" />
+                            </Border>
+                            <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
+                                <Label Text="Bris de verre" TextColor="White" FontSize="16" />
+                                <Label Text="Détecte les vitres ou bouteilles brisées" TextColor="#94A3B8" FontSize="11" />
+                            </VerticalStackLayout>
+                            <Switch Grid.Column="2" IsToggled="{Binding DetectGlassBreak}" OnColor="#3B82F6" ThumbColor="White" VerticalOptions="Center" />
+                        </Grid>
+
+                        <BoxView HeightRequest="1" Color="#1E293B" />
+
+                        <Grid ColumnDefinitions="Auto,*,Auto" Padding="14,12">
+                            <Border Grid.Column="0" BackgroundColor="#302117" StrokeThickness="0" StrokeShape="RoundRectangle 9" WidthRequest="34" HeightRequest="34" Padding="8" Margin="0,0,10,0">
+                                <Image Source="detector_alarm.svg" Aspect="AspectFit" />
+                            </Border>
+                            <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
+                                <Label Text="Alarme incendie" TextColor="White" FontSize="16" />
+                                <Label Text="Détecte les sirènes aiguës" TextColor="#94A3B8" FontSize="11" />
+                            </VerticalStackLayout>
+                            <Switch Grid.Column="2" IsToggled="{Binding DetectSmokeAlarm}" OnColor="#3B82F6" ThumbColor="White" VerticalOptions="Center" />
+                        </Grid>
+
+                        <BoxView HeightRequest="1" Color="#1E293B" />
+
+                        <Grid ColumnDefinitions="Auto,*,Auto" Padding="14,12">
+                            <Border Grid.Column="0" BackgroundColor="#2E2A13" StrokeThickness="0" StrokeShape="RoundRectangle 9" WidthRequest="34" HeightRequest="34" Padding="8" Margin="0,0,10,0">
+                                <Image Source="brand_awareness.svg" Aspect="AspectFit" />
+                            </Border>
+                            <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
+                                <Label Text="Cris" TextColor="White" FontSize="16" />
+                                <Label Text="Détecte les voix agressives" TextColor="#94A3B8" FontSize="11" />
+                            </VerticalStackLayout>
+                            <Switch Grid.Column="2" IsToggled="{Binding DetectShouting}" OnColor="#3B82F6" ThumbColor="White" VerticalOptions="Center" />
+                        </Grid>
+
+                        <BoxView HeightRequest="1" Color="#1E293B" />
+
+                        <Grid ColumnDefinitions="Auto,*,Auto" Padding="14,12">
+                            <Border Grid.Column="0" BackgroundColor="#2E1631" StrokeThickness="0" StrokeShape="RoundRectangle 9" WidthRequest="34" HeightRequest="34" Padding="8" Margin="0,0,10,0">
+                                <Image Source="child_care.svg" Aspect="AspectFit" />
+                            </Border>
+                            <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
+                                <Label Text="Pleurs de bébé" TextColor="White" FontSize="16" />
+                                <Label Text="Alertes de surveillance nourrisson" TextColor="#94A3B8" FontSize="11" />
+                            </VerticalStackLayout>
+                            <Switch Grid.Column="2" IsToggled="{Binding DetectBabyCrying}" OnColor="#3B82F6" ThumbColor="White" VerticalOptions="Center" />
+                        </Grid>
+
+                        <BoxView HeightRequest="1" Color="#1E293B" />
+
+                        <Grid ColumnDefinitions="Auto,*,Auto" Padding="14,12">
+                            <Border Grid.Column="0" BackgroundColor="#103129" StrokeThickness="0" StrokeShape="RoundRectangle 9" WidthRequest="34" HeightRequest="34" Padding="8" Margin="0,0,10,0">
+                                <Image Source="pets.svg" Aspect="AspectFit" />
+                            </Border>
+                            <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
+                                <Label Text="Aboiements" TextColor="White" FontSize="16" />
+                                <Label Text="Suivi d'activité des animaux" TextColor="#94A3B8" FontSize="11" />
+                            </VerticalStackLayout>
+                            <Switch Grid.Column="2" IsToggled="{Binding DetectDogBarking}" OnColor="#3B82F6" ThumbColor="White" VerticalOptions="Center" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

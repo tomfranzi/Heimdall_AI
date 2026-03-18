@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Heimdall_AI.Views.CreateAccountPage"
+             BackgroundColor="#020817"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="22,30,22,24" Spacing="16">
+
+            <Label Text="CRÉER UN COMPTE"
+                   TextColor="#F8FAFC"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   FontSize="24" />
+
+            <Border StrokeThickness="0"
+                    BackgroundColor="#0F172A"
+                    StrokeShape="RoundRectangle 16"
+                    Padding="20"
+                    Margin="0,6,0,0">
+                <VerticalStackLayout Spacing="8">
+                    <Image Source="shield_person.svg"
+                           WidthRequest="90"
+                           HeightRequest="90"
+                           HorizontalOptions="Center" />
+                    <Label Text="Enregistrez vos informations localement"
+                           TextColor="#94A3B8"
+                           FontSize="13"
+                           HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Border>
+
+            <VerticalStackLayout Spacing="8" Margin="0,8,0,0">
+                <Label Text="Nom utilisateur" TextColor="#E2E8F0" FontSize="14" FontAttributes="Bold" />
+                <Border Stroke="#1E293B" StrokeThickness="1" BackgroundColor="#111827" StrokeShape="RoundRectangle 12" Padding="14,10">
+                    <Entry x:Name="UsernameEntry" Placeholder="tom" PlaceholderColor="#64748B" TextColor="#F8FAFC" IsTextPredictionEnabled="False" IsSpellCheckEnabled="False" />
+                </Border>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="8">
+                <Label Text="Mot de passe" TextColor="#E2E8F0" FontSize="14" FontAttributes="Bold" />
+                <Border Stroke="#1E293B" StrokeThickness="1" BackgroundColor="#111827" StrokeShape="RoundRectangle 12" Padding="14,10">
+                    <Entry x:Name="PasswordEntry" Placeholder="••••••••" PlaceholderColor="#64748B" TextColor="#F8FAFC" IsPassword="True" IsTextPredictionEnabled="False" IsSpellCheckEnabled="False" />
+                </Border>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="8">
+                <Label Text="Confirmer mot de passe" TextColor="#E2E8F0" FontSize="14" FontAttributes="Bold" />
+                <Border Stroke="#1E293B" StrokeThickness="1" BackgroundColor="#111827" StrokeShape="RoundRectangle 12" Padding="14,10">
+                    <Entry x:Name="ConfirmPasswordEntry" Placeholder="••••••••" PlaceholderColor="#64748B" TextColor="#F8FAFC" IsPassword="True" IsTextPredictionEnabled="False" IsSpellCheckEnabled="False" />
+                </Border>
+            </VerticalStackLayout>
+
+            <Button Text="Créer le compte"
+                    Clicked="OnCreateAccountClicked"
+                    BackgroundColor="#3B82F6"
+                    TextColor="#F8FAFC"
+                    FontAttributes="Bold"
+                    CornerRadius="14"
+                    HeightRequest="52"
+                    Margin="0,8,0,0" />
+
+            <Button Text="Retour à la connexion"
+                    Clicked="OnBackToLoginClicked"
+                    TextColor="#3B82F6"
+                    BackgroundColor="Transparent"
+                    FontAttributes="Bold"
+                    Margin="0,2,0,0" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

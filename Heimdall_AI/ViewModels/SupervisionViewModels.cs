@@ -2,24 +2,26 @@
 
 public partial class SupervisionViewModels : ObservableObject
 {
-    [ObservableProperty]
-    private string statutSysteme = "Opérationnel";
+    private readonly IDeviceStatusService _deviceStatusService;
+    private readonly IListeningSettingsService _listeningSettingsService;
 
     [ObservableProperty]
-    private Color couleurStatut = Color.FromArgb("#10B981"); // Vert émeraude
+    private string statutSysteme = "Hors ligne";
+
+    [ObservableProperty]
+    private Color couleurStatut = Color.FromArgb("#EF4444");
+
+    [ObservableProperty]
+    private string detailStatutSysteme = "Micro non connecté";
+
+    [ObservableProperty]
+    private string temperatureRaspberry = "--.-°C";
+
+    [ObservableProperty]
+    private string detailTemperature = "En attente de données";
 
     [ObservableProperty]
     private string derniereMiseAJour = "il y a 2 minutes";
-
-    [ObservableProperty]
-    private int capteursActifs = 14;
-
-    [ObservableProperty]
-    private int capteursTotal = 15;
-
-    // Pour la barre de progression (valeur entre 0 et 1)
-    [ObservableProperty]
-    private double progressionCapteurs = 14.0 / 15.0;
 
     [ObservableProperty]
     private string nombreAlertes = "3";
@@ -29,6 +31,43 @@ public partial class SupervisionViewModels : ObservableObject
 
     [ObservableProperty]
     private bool isRefreshing;
+
+    [ObservableProperty]
+    private bool microActif;
+
+    [ObservableProperty]
+    private bool modeAlerteActif;
+
+    public string LibelleBoutonMicro => MicroActif ? "Micro activé" : "Micro désactivé";
+    public string LibelleBoutonModeAlerte => ModeAlerteActif ? "Mode alerte ON" : "Mode alerte OFF";
+    public string IconeBoutonMicro => MicroActif ? "toggle_on.svg" : "close.svg";
+    public string IconeBoutonModeAlerte => ModeAlerteActif ? "detector_alarm.svg" : "close.svg";
+    public Color CouleurBoutonMicro => MicroActif ? Color.FromArgb("#0B5F48") : Color.FromArgb("#3F1D20");
+    public Color CouleurBoutonModeAlerte => ModeAlerteActif ? Color.FromArgb("#7F1D1D") : Color.FromArgb("#1E293B");
+    public string DescriptionModeAlerte => ModeAlerteActif
+        ? "Chaque bruit détecté déclenche une alerte immédiate."
+        : "Les filtres MQTT s'appliquent (catégories + confiance).";
+
+    public SupervisionViewModels(
+        IDeviceStatusService deviceStatusService,
+        IListeningSettingsService listeningSettingsService,
+        IMqttAlertService mqttAlertService)
+    {
+        _deviceStatusService = deviceStatusService;
+        _listeningSettingsService = listeningSettingsService;
+
+        MicroActif = _listeningSettingsService.IsListeningEnabled;
+        ModeAlerteActif = _listeningSettingsService.IsAlertModeEnabled;
+
+        _deviceStatusService.StatusUpdated += OnStatusUpdated;
+
+        if (_deviceStatusService.CurrentStatus is not null)
+        {
+            AppliquerStatus(_deviceStatusService.CurrentStatus);
+        }
+
+        _ = mqttAlertService.StartAsync();
+    }
 
     // --- Commandes pour les Actions Rapides ---
     [RelayCommand]
@@ -47,8 +86,58 @@ public partial class SupervisionViewModels : ObservableObject
     private async Task RefreshDonneesAsync()
     {
         IsRefreshing = true;
-        await Task.Delay(1000); // Simulation réseau
+        await Task.Delay(300);
         DerniereMiseAJour = "à l'instant";
         IsRefreshing = false;
+    }
+
+    private void OnStatusUpdated(DeviceStatusInfo status)
+    {
+        MainThread.BeginInvokeOnMainThread(() => AppliquerStatus(status));
+    }
+
+    private void AppliquerStatus(DeviceStatusInfo status)
+    {
+        var isOnline = string.Equals(status.Status, "online", StringComparison.OrdinalIgnoreCase)
+                       || string.Equals(status.Status, "operational", StringComparison.OrdinalIgnoreCase)
+                       || string.Equals(status.Status, "ok", StringComparison.OrdinalIgnoreCase);
+
+        StatutSysteme = isOnline ? "Opérationnel" : "Hors ligne";
+        CouleurStatut = isOnline ? Color.FromArgb("#10B981") : Color.FromArgb("#EF4444");
+        DetailStatutSysteme = isOnline
+            ? $"Micro actif • en ligne depuis {status.Uptime}"
+            : "Micro non disponible";
+
+        TemperatureRaspberry = string.IsNullOrWhiteSpace(status.CpuTemp) ? "--.-°C" : status.CpuTemp;
+        DetailTemperature = isOnline ? "Température Raspberry Pi" : "Données indisponibles";
+    }
+
+    partial void OnMicroActifChanged(bool value)
+    {
+        _listeningSettingsService.IsListeningEnabled = value;
+        OnPropertyChanged(nameof(LibelleBoutonMicro));
+        OnPropertyChanged(nameof(IconeBoutonMicro));
+        OnPropertyChanged(nameof(CouleurBoutonMicro));
+    }
+
+    partial void OnModeAlerteActifChanged(bool value)
+    {
+        _listeningSettingsService.IsAlertModeEnabled = value;
+        OnPropertyChanged(nameof(LibelleBoutonModeAlerte));
+        OnPropertyChanged(nameof(IconeBoutonModeAlerte));
+        OnPropertyChanged(nameof(CouleurBoutonModeAlerte));
+        OnPropertyChanged(nameof(DescriptionModeAlerte));
+    }
+
+    [RelayCommand]
+    private void ToggleMicro()
+    {
+        MicroActif = !MicroActif;
+    }
+
+    [RelayCommand]
+    private void ToggleModeAlerte()
+    {
+        ModeAlerteActif = !ModeAlerteActif;
     }
 }

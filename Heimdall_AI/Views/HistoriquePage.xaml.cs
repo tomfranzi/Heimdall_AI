@@ -1,8 +1,8 @@
 namespace Heimdall_AI.Views;
 
-public partial class AlertesPage : ContentPage
+public partial class HistoriquePage : ContentPage
 {
-    public AlertesPage(AlertesViewModels viewModel)
+    public HistoriquePage(HistoriqueViewModels viewModel)
     {
         InitializeComponent();
         BindingContext = viewModel;
