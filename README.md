@@ -124,7 +124,7 @@ Le déploiement iOS nécessite un **Mac avec Xcode**, un certificat et un profil
 ## 🤝 Contribution
 
 Tom
-Alex
+Alex  https://github.com/alexdhh/heimdallai_detection.git
 Mathys
 Ali
 
