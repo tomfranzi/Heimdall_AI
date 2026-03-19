@@ -8,6 +8,10 @@ public partial class LoginPage : ContentPage
         Application.Current?.Handler?.MauiContext?.Services.GetRequiredService<ILocalAuthService>()
         ?? throw new InvalidOperationException("Service d'authentification indisponible.");
 
+    private IBiometricAuthService BiometricAuthService =>
+        Application.Current?.Handler?.MauiContext?.Services.GetRequiredService<IBiometricAuthService>()
+        ?? throw new InvalidOperationException("Service biométrique indisponible.");
+
     public LoginPage()
     {
         InitializeComponent();
@@ -23,6 +27,11 @@ public partial class LoginPage : ContentPage
             if (!string.IsNullOrWhiteSpace(dernierUtilisateur))
             {
                 UsernameEntry.Text = dernierUtilisateur;
+
+                if (AuthService.IsSessionActive())
+                {
+                    await Shell.Current.GoToAsync("//SupervisionPage");
+                }
             }
         }
         catch
@@ -59,6 +68,7 @@ public partial class LoginPage : ContentPage
         }
 
         await AuthService.SetDernierUtilisateurAsync(nomUtilisateur);
+        AuthService.SetSessionActive(true);
 
         await Shell.Current.GoToAsync("//SupervisionPage");
     }
@@ -66,5 +76,48 @@ public partial class LoginPage : ContentPage
     private async void OnCreateAccountClicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync(nameof(CreateAccountPage));
+    }
+
+    private async void OnFaceIdClicked(object sender, TappedEventArgs e)
+    {
+        await ConnexionBiometriqueAsync("Face ID");
+    }
+
+    private async void OnFingerprintClicked(object sender, TappedEventArgs e)
+    {
+        await ConnexionBiometriqueAsync("Empreinte");
+    }
+
+    private async Task ConnexionBiometriqueAsync(string mode)
+    {
+        var nomUtilisateur = UsernameEntry.Text?.Trim() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(nomUtilisateur))
+        {
+            await DisplayAlert("Connexion biométrique", "Saisissez votre nom utilisateur avant d'utiliser la biométrie.", "OK");
+            return;
+        }
+
+        if (!await AuthService.UtilisateurExisteAsync(nomUtilisateur))
+        {
+            await DisplayAlert("Connexion biométrique", "Ce compte n'existe pas encore localement.", "OK");
+            return;
+        }
+
+        if (!await BiometricAuthService.IsAvailableAsync())
+        {
+            await DisplayAlert("Connexion biométrique", "La biométrie n'est pas disponible sur cet appareil.", "OK");
+            return;
+        }
+
+        var ok = await BiometricAuthService.AuthenticateAsync("Heimdall", $"Authentification {mode}");
+        if (!ok)
+        {
+            await DisplayAlert("Connexion biométrique", "Authentification annulée ou échouée.", "OK");
+            return;
+        }
+
+        await AuthService.SetDernierUtilisateurAsync(nomUtilisateur);
+        AuthService.SetSessionActive(true);
+        await Shell.Current.GoToAsync("//SupervisionPage");
     }
 }

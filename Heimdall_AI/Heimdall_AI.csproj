@@ -53,15 +53,16 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+       <!-- App Icon -->
+		<MauiIcon Include="Resources\Icone\neurology.svg" Color="#020817" />
 
-		<!-- Splash Screen -->
-		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+      <!-- Splash Screen -->
+		<MauiSplashScreen Include="Resources\Icone\neurology.svg" Color="#020817" BaseSize="220,220" />
 
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
      <MauiImage Include="Resources\Icone\*" />
+     <MauiImage Remove="Resources\Icone\neurology.svg" />
 		<MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
 		
 		<!-- Custom Fonts -->
@@ -77,6 +78,7 @@
 		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.30" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
         <PackageReference Include="MQTTnet" Version="4.3.7.1207" />
+        <PackageReference Include="Xamarin.AndroidX.Biometric" Version="1.1.0.12" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -46,7 +46,7 @@ public partial class SupervisionViewModels : ObservableObject
     public Color CouleurBoutonModeAlerte => ModeAlerteActif ? Color.FromArgb("#7F1D1D") : Color.FromArgb("#1E293B");
     public string DescriptionModeAlerte => ModeAlerteActif
         ? "Chaque bruit détecté déclenche une alerte immédiate."
-        : "Les filtres MQTT s'appliquent (catégories + confiance).";
+        : "Les filtres s'appliquent (catégories + confiance).";
 
     public SupervisionViewModels(
         IDeviceStatusService deviceStatusService,

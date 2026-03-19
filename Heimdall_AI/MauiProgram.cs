@@ -21,10 +21,12 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
+        builder.Services.AddSingleton<IFileDatabaseService, FileDatabaseService>();
         builder.Services.AddSingleton<IAlertHistoryService, AlertHistoryService>();
         builder.Services.AddSingleton<IListeningSettingsService, ListeningSettingsService>();
         builder.Services.AddSingleton<IDeviceStatusService, DeviceStatusService>();
         builder.Services.AddSingleton<INativeAlertService, NativeAlertService>();
+        builder.Services.AddSingleton<IBiometricAuthService, BiometricAuthService>();
         builder.Services.AddSingleton<IMqttAlertService, MqttAlertService>();
         builder.Services.AddSingleton<ILocalAuthService, LocalAuthService>();
 

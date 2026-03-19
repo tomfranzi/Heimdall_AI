@@ -6,6 +6,7 @@ public partial class App : Application
     private readonly IListeningSettingsService _listeningSettingsService;
     private readonly INativeAlertService _nativeAlertService;
     private bool _securityAlertOpening;
+    private bool _alarmResumePromptOpening;
 
     public App(
         IMqttAlertService mqttAlertService,
@@ -23,7 +24,48 @@ public partial class App : Application
 
     protected override Window CreateWindow(IActivationState? activationState)
     {
-        return new Window(new AppShell());
+        var window = new Window(new AppShell());
+        window.Resumed += OnWindowResumed;
+        return window;
+    }
+
+    private void OnWindowResumed(object? sender, EventArgs e)
+    {
+        MainThread.BeginInvokeOnMainThread(async () =>
+        {
+            if (_alarmResumePromptOpening)
+            {
+                return;
+            }
+
+            if (!await _nativeAlertService.IsCriticalAlertActiveAsync())
+            {
+                return;
+            }
+
+            if (Shell.Current is null)
+            {
+                return;
+            }
+
+            if (Shell.Current.CurrentState.Location.ToString().Contains(nameof(SecurityAlertPage), StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            _alarmResumePromptOpening = true;
+            try
+            {
+                var type = Uri.EscapeDataString("ALARME ACTIVE");
+                var location = Uri.EscapeDataString("Appareil");
+                var time = Uri.EscapeDataString("Maintenant");
+                await Shell.Current.GoToAsync($"{nameof(SecurityAlertPage)}?type={type}&location={location}&timestamp={time}");
+            }
+            finally
+            {
+                _alarmResumePromptOpening = false;
+            }
+        });
     }
 
     private void OnAlerteActiveRecue(Alertes alerte)
@@ -57,9 +99,9 @@ public partial class App : Application
             _securityAlertOpening = true;
             try
             {
-                var type = Uri.EscapeDataString(alerte.TypeDetection ?? "Unknown sound");
+                var type = Uri.EscapeDataString(alerte.TypeDetection ?? "Son inconnu");
                 var location = Uri.EscapeDataString("Zone principale");
-                var time = Uri.EscapeDataString("Just now");
+                var time = Uri.EscapeDataString("À l'instant");
 
                 await Shell.Current.GoToAsync($"{nameof(SecurityAlertPage)}?type={type}&location={location}&timestamp={time}");
             }

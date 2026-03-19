@@ -227,21 +227,20 @@ public sealed class MqttAlertService : IMqttAlertService
 
     private Alertes? BuildAlertFromPayload(string payloadText, string? topic)
     {
-        var isAlertModeEnabled = _listeningSettingsService.IsAlertModeEnabled;
-
         if (string.IsNullOrWhiteSpace(payloadText))
         {
-            var detectedType = ExtractTypeFromTopic(topic);
-            if (!isAlertModeEnabled && !_listeningSettingsService.IsCategoryEnabled(detectedType))
+            var detectedType = TraduireType(ExtractTypeFromTopic(topic));
+            if (!_listeningSettingsService.IsCategoryEnabled(detectedType))
             {
                 return null;
             }
 
             return new Alertes
             {
-                Titre = "Alerte MQTT",
+                Titre = ConstruireTitreDepuisType(detectedType),
                 TypeDetection = detectedType,
-                Description = "Message vide reçu sur le broker.",
+                Description = $"Bruit détecté : {detectedType}",
+                DureeTexte = "1.0s",
                 Niveau = "Info",
                 DateCreation = DateTime.Now
             };
@@ -252,23 +251,32 @@ public sealed class MqttAlertService : IMqttAlertService
             using var doc = JsonDocument.Parse(payloadText);
             var root = doc.RootElement;
 
-            var titre = ReadString(root, "titre")
-                        ?? ReadString(root, "title")
-                        ?? "Alerte MQTT";
+            var detectedTypeBrut = ReadString(root, "type")
+                                   ?? ReadString(root, "detectedType")
+                                   ?? ExtractTypeFromTopic(topic);
 
-            var detectedType = ReadString(root, "type")
-                               ?? ReadString(root, "detectedType")
-                               ?? ExtractTypeFromTopic(topic);
+            var detectedType = TraduireType(detectedTypeBrut);
 
-            var description = ReadString(root, "description")
-                              ?? ReadString(root, "message")
-                              ?? $"Bruit détecté : {detectedType}";
+            var titreEntrant = ReadString(root, "titre")
+                              ?? ReadString(root, "title");
+
+            var titre = string.IsNullOrWhiteSpace(titreEntrant)
+                        || string.Equals(titreEntrant, "Alerte MQTT", StringComparison.OrdinalIgnoreCase)
+                        ? ConstruireTitreDepuisType(detectedType)
+                        : titreEntrant!;
+
+            var descriptionEntrante = ReadString(root, "description")
+                                     ?? ReadString(root, "message");
+
+            var description = string.IsNullOrWhiteSpace(descriptionEntrante)
+                ? $"Bruit détecté : {detectedType}"
+                : NettoyerDescription(descriptionEntrante!, detectedType);
 
             var niveau = ReadString(root, "niveau")
                          ?? ReadString(root, "level")
                          ?? "Info";
 
-            if (!isAlertModeEnabled && !_listeningSettingsService.IsCategoryEnabled(detectedType))
+            if (!_listeningSettingsService.IsCategoryEnabled(detectedType))
             {
                 return null;
             }
@@ -278,7 +286,11 @@ public sealed class MqttAlertService : IMqttAlertService
             confidence ??= ReadDouble(root, "probability");
             var normalizedConfidence = NormalizeConfidence(confidence);
 
-            if (!isAlertModeEnabled && !_listeningSettingsService.IsConfidenceAccepted(normalizedConfidence))
+            var duration = ReadDouble(root, "duration")
+                           ?? ReadDouble(root, "duration_seconds")
+                           ?? ReadDouble(root, "durationSeconds");
+
+            if (!_listeningSettingsService.IsAlertModeEnabled && !_listeningSettingsService.IsConfidenceAccepted(normalizedConfidence))
             {
                 return null;
             }
@@ -295,6 +307,7 @@ public sealed class MqttAlertService : IMqttAlertService
                 Titre = titre,
                 TypeDetection = detectedType,
                 Description = description,
+                DureeTexte = FormatDuree(duration),
                 Niveau = niveau,
                 Confiance = normalizedConfidence,
                 DateCreation = dateCreation
@@ -302,17 +315,18 @@ public sealed class MqttAlertService : IMqttAlertService
         }
         catch
         {
-            var detectedType = ExtractTypeFromTopic(topic);
-            if (!isAlertModeEnabled && !_listeningSettingsService.IsCategoryEnabled(detectedType))
+            var detectedType = TraduireType(ExtractTypeFromTopic(topic));
+            if (!_listeningSettingsService.IsCategoryEnabled(detectedType))
             {
                 return null;
             }
 
             return new Alertes
             {
-                Titre = "Alerte MQTT",
+                Titre = ConstruireTitreDepuisType(detectedType),
                 TypeDetection = detectedType,
                 Description = $"Bruit détecté : {detectedType}",
+                DureeTexte = "1.0s",
                 Niveau = "Info",
                 Confiance = 0,
                 DateCreation = DateTime.Now
@@ -380,5 +394,86 @@ public sealed class MqttAlertService : IMqttAlertService
         }
 
         return null;
+    }
+
+    private static string ConstruireTitreDepuisType(string type)
+    {
+        return string.IsNullOrWhiteSpace(type) ? "Heimdall" : $"{type} détecté";
+    }
+
+    private static string NettoyerDescription(string description, string typeTraduit)
+    {
+        if (string.IsNullOrWhiteSpace(description))
+        {
+            return $"Bruit détecté : {typeTraduit}";
+        }
+
+        var texte = description.Trim();
+        if (texte.StartsWith("{") || texte.StartsWith("["))
+        {
+            return $"Bruit détecté : {typeTraduit}";
+        }
+
+        return TraduireTypeDansTexte(texte);
+    }
+
+    private static string TraduireTypeDansTexte(string texte)
+    {
+        return texte
+            .Replace("Bruit détecté : Speech", "Bruit détecté : Parole", StringComparison.OrdinalIgnoreCase)
+            .Replace("Bruit détecté : Knock", "Bruit détecté : Toc à la porte", StringComparison.OrdinalIgnoreCase)
+            .Replace("Bruit détecté : Alarm", "Bruit détecté : Alarme", StringComparison.OrdinalIgnoreCase)
+            .Replace("Bruit détecté : Door", "Bruit détecté : Porte", StringComparison.OrdinalIgnoreCase)
+            .Replace("Bruit détecté : Mechanic", "Bruit détecté : Mécanique", StringComparison.OrdinalIgnoreCase)
+            .Replace("Bruit détecté : Fan", "Bruit détecté : Ventilateur", StringComparison.OrdinalIgnoreCase)
+            .Replace("Bruit détecté : Tap", "Bruit détecté : Frappe légère", StringComparison.OrdinalIgnoreCase)
+            .Replace("Bruit détecté : Wood", "Bruit détecté : Coup", StringComparison.OrdinalIgnoreCase)
+            .Replace("Bruit détecté : Scream", "Bruit détecté : Cri aigu", StringComparison.OrdinalIgnoreCase)
+            .Replace("Bruit détecté : Shout", "Bruit détecté : Cri fort", StringComparison.OrdinalIgnoreCase)
+            .Replace("Bruit détecté : Yell", "Bruit détecté : Hurlement", StringComparison.OrdinalIgnoreCase)
+            .Replace("Bruit détecté : Glass", "Bruit détecté : Verre", StringComparison.OrdinalIgnoreCase)
+            .Replace("Bruit détecté : Shatter", "Bruit détecté : Bris", StringComparison.OrdinalIgnoreCase)
+            .Replace("Bruit détecté : Crying, sobbing", "Bruit détecté : Pleurs, sanglots", StringComparison.OrdinalIgnoreCase)
+            .Replace("Bruit détecté : Domestic animals, pets", "Bruit détecté : Animaux domestiques", StringComparison.OrdinalIgnoreCase)
+            .Replace("Bruit détecté : Click", "Bruit détecté : Clic", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string TraduireType(string type)
+    {
+        if (string.IsNullOrWhiteSpace(type))
+        {
+            return "Inconnu";
+        }
+
+        return type.Trim() switch
+        {
+            var t when t.Contains("Speech", StringComparison.OrdinalIgnoreCase) => "Parole",
+            var t when t.Contains("Knock", StringComparison.OrdinalIgnoreCase) => "Toc à la porte",
+            var t when t.Contains("Alarm", StringComparison.OrdinalIgnoreCase) => "Alarme",
+            var t when t.Contains("Door", StringComparison.OrdinalIgnoreCase) => "Porte",
+            var t when t.Contains("Mechanic", StringComparison.OrdinalIgnoreCase) => "Mécanique",
+            var t when t.Contains("Fan", StringComparison.OrdinalIgnoreCase) => "Ventilateur",
+            var t when t.Contains("Tap", StringComparison.OrdinalIgnoreCase) => "Frappe légère",
+            var t when t.Contains("Wood", StringComparison.OrdinalIgnoreCase) => "Coup",
+            var t when t.Contains("Scream", StringComparison.OrdinalIgnoreCase) => "Cri aigu",
+            var t when t.Contains("Shout", StringComparison.OrdinalIgnoreCase) => "Cri fort",
+            var t when t.Contains("Yell", StringComparison.OrdinalIgnoreCase) => "Hurlement",
+            var t when t.Contains("Glass", StringComparison.OrdinalIgnoreCase) => "Verre",
+            var t when t.Contains("Shatter", StringComparison.OrdinalIgnoreCase) => "Bris",
+            var t when t.Contains("Crying", StringComparison.OrdinalIgnoreCase) || t.Contains("sobbing", StringComparison.OrdinalIgnoreCase) => "Pleurs, sanglots",
+            var t when t.Contains("Domestic animals", StringComparison.OrdinalIgnoreCase) || t.Contains("pets", StringComparison.OrdinalIgnoreCase) => "Animaux domestiques",
+            var t when t.Contains("Click", StringComparison.OrdinalIgnoreCase) => "Clic",
+            _ => type
+        };
+    }
+
+    private static string FormatDuree(double? duration)
+    {
+        if (!duration.HasValue || duration.Value <= 0)
+        {
+            return "1.0s";
+        }
+
+        return $"{duration.Value:F1}s";
     }
 }

@@ -4,10 +4,13 @@ namespace Heimdall_AI.Services
     {
         Task PushNotificationAsync(Alertes alerte, bool critical, CancellationToken cancellationToken = default);
         Task StopCriticalAlertAsync(CancellationToken cancellationToken = default);
+        Task<bool> IsCriticalAlertActiveAsync(CancellationToken cancellationToken = default);
     }
 
     public sealed class NativeAlertService : INativeAlertService
     {
+        private const string CriticalAlarmStateKey = "heimdall.critical_alarm.active";
+
         public Task PushNotificationAsync(Alertes alerte, bool critical, CancellationToken cancellationToken = default)
         {
             if (alerte is null)
@@ -31,8 +34,16 @@ namespace Heimdall_AI.Services
         {
 #if ANDROID
             AndroidAlertHelper.StopCriticalAlarm();
+            global::Heimdall_AI.HeimdallForegroundService.RequestStopCriticalAlarm(Android.App.Application.Context);
 #endif
+            Preferences.Default.Set(CriticalAlarmStateKey, false);
             return Task.CompletedTask;
+        }
+
+        public Task<bool> IsCriticalAlertActiveAsync(CancellationToken cancellationToken = default)
+        {
+            var isActive = Preferences.Default.Get(CriticalAlarmStateKey, false);
+            return Task.FromResult(isActive);
         }
 
         private static bool DescriptionSembleJson(string? description)
@@ -52,6 +63,7 @@ namespace Heimdall_AI.Services
     {
         private const string NormalChannelId = "heimdall_notifications";
         private const string CriticalChannelId = "heimdall_critical_alerts";
+        private const string CriticalAlarmStateKey = "heimdall.critical_alarm.active";
 
         private static Android.Media.ToneGenerator? _toneGenerator;
         private static CancellationTokenSource? _criticalAlarmCts;
@@ -64,23 +76,37 @@ namespace Heimdall_AI.Services
                 EnsureChannels(context);
 
                 var launchIntent = context.PackageManager?.GetLaunchIntentForPackage(context.PackageName);
-                var pendingIntent = Android.App.PendingIntent.GetActivity(
+                var contentIntent = Android.App.PendingIntent.GetActivity(
                     context,
                     0,
                     launchIntent,
                     Android.App.PendingIntentFlags.Immutable | Android.App.PendingIntentFlags.UpdateCurrent);
 
+                var fullScreenIntent = Android.App.PendingIntent.GetActivity(
+                    context,
+                    1001,
+                    launchIntent,
+                    Android.App.PendingIntentFlags.Immutable | Android.App.PendingIntentFlags.UpdateCurrent);
+
                 var channelId = critical ? CriticalChannelId : NormalChannelId;
                 var builder = new AndroidX.Core.App.NotificationCompat.Builder(context, channelId)
-                    .SetSmallIcon(global::Microsoft.Maui.Resource.Mipmap.appicon)
-                    .SetContentTitle(string.IsNullOrWhiteSpace(alerte.Titre) ? "Alerte Heimdall" : alerte.Titre)
+                    .SetSmallIcon(Android.Resource.Drawable.IcDialogAlert)
+                    .SetContentTitle("Heimdall")
                     .SetContentText(string.IsNullOrWhiteSpace(alerte.Description) ? alerte.TypeDetection : alerte.Description)
                     .SetStyle(new AndroidX.Core.App.NotificationCompat.BigTextStyle().BigText(string.IsNullOrWhiteSpace(alerte.Description) ? alerte.TypeDetection : alerte.Description))
-                    .SetContentIntent(pendingIntent)
+                    .SetContentIntent(contentIntent)
                     .SetAutoCancel(true)
                     .SetPriority(critical ? AndroidX.Core.App.NotificationCompat.PriorityMax : AndroidX.Core.App.NotificationCompat.PriorityHigh)
                     .SetCategory(critical ? AndroidX.Core.App.NotificationCompat.CategoryAlarm : AndroidX.Core.App.NotificationCompat.CategoryStatus)
+                    .SetVisibility(AndroidX.Core.App.NotificationCompat.VisibilityPublic)
                     .SetDefaults((int)Android.App.NotificationDefaults.All);
+
+                if (critical)
+                {
+                    builder.SetFullScreenIntent(fullScreenIntent, true)
+                           .SetOngoing(true)
+                           .SetVibrate([0, 700, 350, 700, 350, 700]);
+                }
 
                 AndroidX.Core.App.NotificationManagerCompat.From(context).Notify(Guid.NewGuid().GetHashCode(), builder.Build());
 
@@ -121,6 +147,7 @@ namespace Heimdall_AI.Services
                 };
                 critical.EnableVibration(true);
                 critical.EnableLights(true);
+                critical.LockscreenVisibility = Android.App.NotificationVisibility.Public;
                 critical.SetSound(null, null);
                 manager.CreateNotificationChannel(critical);
             }
@@ -130,6 +157,8 @@ namespace Heimdall_AI.Services
         {
             try
             {
+                Preferences.Default.Set(CriticalAlarmStateKey, true);
+
                 var audioManager = (Android.Media.AudioManager?)context.GetSystemService(Android.Content.Context.AudioService);
                 if (audioManager is not null)
                 {
@@ -174,6 +203,8 @@ namespace Heimdall_AI.Services
         {
             try
             {
+                Preferences.Default.Set(CriticalAlarmStateKey, false);
+
                 _criticalAlarmCts?.Cancel();
                 _criticalAlarmCts?.Dispose();
                 _criticalAlarmCts = null;

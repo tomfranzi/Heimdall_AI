@@ -11,8 +11,8 @@
                  Command="{Binding RafraichirCommand}"
                  RefreshColor="#3B82F6">
 
-        <VerticalStackLayout Padding="16,18,16,20" Spacing="14">
-            <Grid ColumnDefinitions="Auto,*,Auto" VerticalOptions="Center">
+        <Grid Padding="16,18,16,20" RowDefinitions="Auto,Auto,Auto,*" RowSpacing="14">
+            <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" VerticalOptions="Center">
                 <Border Grid.Column="0" WidthRequest="46" HeightRequest="46" StrokeShape="RoundRectangle 12" StrokeThickness="0" BackgroundColor="#0B2A5E" Padding="11" Margin="0,0,10,0">
                     <Image Source="shield_person.svg" Aspect="AspectFit" />
                 </Border>
@@ -31,38 +31,47 @@
                 </Border>
             </Grid>
 
-            <Label Text="Historique des alertes" TextColor="White" FontSize="28" FontAttributes="Bold" />
-            <Label Text="Les alertes précédentes apparaissent ici dès qu'une nouvelle alerte active est reçue." TextColor="#94A3B8" FontSize="12" />
+            <VerticalStackLayout Grid.Row="1" Spacing="2">
+                <Label Text="Historique des alertes" TextColor="White" FontSize="28" FontAttributes="Bold" />
+                <Label Text="Les alertes précédentes apparaissent ici dès qu'une nouvelle alerte active est reçue." TextColor="#94A3B8" FontSize="12" />
+            </VerticalStackLayout>
 
-            <HorizontalStackLayout Spacing="10" Margin="0,4,0,2">
-                <Border BackgroundColor="#22B6F6" StrokeThickness="0" StrokeShape="RoundRectangle 14" Padding="14,6">
-                    <Label Text="Today" TextColor="#041529" FontAttributes="Bold" FontSize="12" />
-                </Border>
-                <Border BackgroundColor="#1E293B" Stroke="#334155" StrokeThickness="1" StrokeShape="RoundRectangle 14" Padding="14,6">
-                    <Label Text="Yesterday" TextColor="#CBD5E1" FontAttributes="Bold" FontSize="12" />
-                </Border>
-                <Border BackgroundColor="#1E293B" Stroke="#334155" StrokeThickness="1" StrokeShape="RoundRectangle 14" Padding="14,6">
-                    <Label Text="Last 7 Days" TextColor="#CBD5E1" FontAttributes="Bold" FontSize="12" />
-                </Border>
-            </HorizontalStackLayout>
+            <ScrollView Grid.Row="2" Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                <HorizontalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Filtres}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate>
+                            <Border StrokeShape="RoundRectangle 14"
+                                    StrokeThickness="1"
+                                    Stroke="#334155"
+                                    BackgroundColor="#1E293B"
+                                    Padding="12,6">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HistoriqueViewModels}}, Path=SelectionnerFiltreCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
 
-            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" Margin="0,0,0,2">
-                <Label Text="Sévérité:" VerticalOptions="Center" TextColor="#94A3B8" FontSize="14" />
-                <Border Grid.Column="1" BackgroundColor="#1E293B" Stroke="#334155" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="10,4">
-                    <Picker Title="Toutes les sévérités"
-                            TextColor="#CBD5E1"
-                            TitleColor="#94A3B8"
-                            SelectedIndex="0">
-                        <Picker.Items>
-                            <x:String>Toutes les sévérités</x:String>
-                            <x:String>Alert</x:String>
-                            <x:String>Info</x:String>
-                        </Picker.Items>
-                    </Picker>
-                </Border>
-            </Grid>
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                        <Setter Property="BackgroundColor" Value="#22B6F6" />
+                                        <Setter Property="Stroke" Value="#22B6F6" />
+                                    </DataTrigger>
+                                </Border.Triggers>
 
-            <CollectionView ItemsSource="{Binding ListeAlertesHistoriques}" SelectionMode="None">
+                                <Label Text="{Binding Libelle}" TextColor="#CBD5E1" FontAttributes="Bold" FontSize="12">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                            <Setter Property="TextColor" Value="#041529" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </HorizontalStackLayout>
+            </ScrollView>
+
+            <CollectionView Grid.Row="3" ItemsSource="{Binding ListeAlertesHistoriques}" SelectionMode="None" VerticalOptions="FillAndExpand">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:Alertes">
                         <Border StrokeShape="RoundRectangle 16" Stroke="#1E293B" StrokeThickness="1" BackgroundColor="#1C2A42" Margin="0,2,0,12" Padding="0">
@@ -84,12 +93,7 @@
                                     <Label Text="{Binding Description}" TextColor="#64748B" FontSize="12" LineBreakMode="TailTruncation" MaxLines="1" />
                                 </VerticalStackLayout>
 
-                                <VerticalStackLayout Grid.Column="3" Spacing="8" VerticalOptions="Center" Margin="10,0,12,0">
-                                    <Border StrokeThickness="0" BackgroundColor="{Binding CouleurHistoriqueBadge}" StrokeShape="RoundRectangle 10" Padding="10,4" HorizontalOptions="End">
-                                        <Label Text="{Binding TypeHistoriqueTexte}" TextColor="White" FontSize="12" FontAttributes="Bold" />
-                                    </Border>
-                                    <Label Text="Listen" TextColor="#22B6F6" FontSize="14" FontAttributes="Bold" HorizontalOptions="End" />
-                                </VerticalStackLayout>
+                                <Grid Grid.Column="3" />
                             </Grid>
                         </Border>
                     </DataTemplate>
@@ -102,6 +106,6 @@
                     </VerticalStackLayout>
                 </CollectionView.EmptyView>
             </CollectionView>
-        </VerticalStackLayout>
+        </Grid>
     </RefreshView>
 </ContentPage>

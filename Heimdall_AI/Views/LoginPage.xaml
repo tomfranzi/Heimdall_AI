@@ -7,43 +7,40 @@
              Shell.TabBarIsVisible="False">
 
     <ScrollView>
-        <VerticalStackLayout Padding="20,26,20,24" Spacing="16">
+        <VerticalStackLayout Padding="16,18,16,24" Spacing="16">
 
-            <Label Text="CONNEXION"
-                   TextColor="#F8FAFC"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center"
-                   FontSize="34" />
+            <Grid ColumnDefinitions="Auto,*,Auto" VerticalOptions="Center">
+                <Border Grid.Column="0" WidthRequest="46" HeightRequest="46" StrokeShape="RoundRectangle 12" StrokeThickness="0" BackgroundColor="#0B2A5E" Padding="11" Margin="0,0,10,0">
+                    <Image Source="shield_person.svg" Aspect="AspectFit" />
+                </Border>
+
+                <Label Grid.Column="1" VerticalOptions="Center" FontSize="30" FontAttributes="Bold" CharacterSpacing="0.5">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Heimdall " TextColor="#F8FAFC" />
+                            <Span Text="AI" TextColor="#3B82F6" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+
+                <Border Grid.Column="2" WidthRequest="44" HeightRequest="44" BackgroundColor="#0F172A" Stroke="#1E293B" StrokeThickness="1" StrokeShape="RoundRectangle 22" Padding="11">
+                    <Image Source="neurology.svg" Aspect="AspectFit" />
+                </Border>
+            </Grid>
 
             <Border Stroke="#1E293B"
                     StrokeThickness="1"
-                    BackgroundColor="#0B1F3F"
-                    StrokeShape="RoundRectangle 22"
-                    Padding="22"
-                    Margin="0,4,0,0">
-                <Border.Shadow>
-                    <Shadow Brush="#4D3B82F6" Radius="20" Opacity="0.8" Offset="0,8" />
-                </Border.Shadow>
-
-                <VerticalStackLayout Spacing="8">
-                    <Image Source="shield_person.svg"
-                           WidthRequest="100"
-                           HeightRequest="100"
-                           HorizontalOptions="Center" />
-
-                    <Label HorizontalOptions="Center" FontSize="22" FontAttributes="Bold" CharacterSpacing="0.8">
-                        <Label.FormattedText>
-                            <FormattedString>
-                                <Span Text="HEIMDALL " TextColor="#F8FAFC" />
-                                <Span Text="AI" TextColor="#3B82F6" />
-                            </FormattedString>
-                        </Label.FormattedText>
-                    </Label>
-
-                    <Label Text="Accès sécurisé à votre gardien IA"
+                    BackgroundColor="#0F172A"
+                    StrokeShape="RoundRectangle 18"
+                    Padding="16,14">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Connexion sécurisée"
+                           TextColor="#F8FAFC"
+                           FontAttributes="Bold"
+                           FontSize="30" />
+                    <Label Text="Accédez rapidement à votre surveillance Heimdall."
                            TextColor="#94A3B8"
-                           FontSize="13"
-                           HorizontalOptions="Center" />
+                           FontSize="13" />
                 </VerticalStackLayout>
             </Border>
 
@@ -59,10 +56,7 @@
                         StrokeShape="RoundRectangle 14"
                         Padding="12,10">
                     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
-                        <Label Text="✉"
-                               TextColor="#3B82F6"
-                               FontSize="18"
-                               VerticalOptions="Center" />
+                        <Image Source="person.svg" WidthRequest="18" HeightRequest="18" VerticalOptions="Center" />
                         <Entry Grid.Column="1"
                                x:Name="UsernameEntry"
                                Placeholder="tom"
@@ -86,10 +80,7 @@
                         StrokeShape="RoundRectangle 14"
                         Padding="12,10">
                     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
-                        <Label Text="🔒"
-                               TextColor="#3B82F6"
-                               FontSize="16"
-                               VerticalOptions="Center" />
+                        <Image Source="shield_person.svg" WidthRequest="18" HeightRequest="18" VerticalOptions="Center" />
                         <Entry Grid.Column="1"
                                x:Name="PasswordEntry"
                                Placeholder="••••••••"
@@ -124,16 +115,22 @@
 
             <HorizontalStackLayout HorizontalOptions="Center" Spacing="12">
                 <Border Stroke="#1E293B" StrokeThickness="1" BackgroundColor="#0F172A" StrokeShape="RoundRectangle 12" Padding="12,8">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnFaceIdClicked" />
+                    </Border.GestureRecognizers>
                     <VerticalStackLayout Spacing="4">
-                        <Label Text="😎" HorizontalOptions="Center" FontSize="18" />
-                        <Label Text="FACE ID" TextColor="#94A3B8" FontSize="10" HorizontalOptions="Center" />
+                        <Image Source="familiar_face_and_zone.svg" WidthRequest="22" HeightRequest="22" HorizontalOptions="Center" />
+                        <Label Text="Reconnaissance faciale" TextColor="#94A3B8" FontSize="10" HorizontalOptions="Center" />
                     </VerticalStackLayout>
                 </Border>
 
                 <Border Stroke="#1E293B" StrokeThickness="1" BackgroundColor="#0F172A" StrokeShape="RoundRectangle 12" Padding="12,8">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnFingerprintClicked" />
+                    </Border.GestureRecognizers>
                     <VerticalStackLayout Spacing="4">
-                        <Label Text="🆔" HorizontalOptions="Center" FontSize="18" />
-                        <Label Text="TOUCH ID" TextColor="#94A3B8" FontSize="10" HorizontalOptions="Center" />
+                        <Image Source="fingerprint.svg" WidthRequest="22" HeightRequest="22" HorizontalOptions="Center" />
+                        <Label Text="Empreinte" TextColor="#94A3B8" FontSize="10" HorizontalOptions="Center" />
                     </VerticalStackLayout>
                 </Border>
             </HorizontalStackLayout>

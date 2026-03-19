@@ -51,16 +51,8 @@
                 </Grid>
             </Border>
 
-            <Button Text="Écouter en direct"
-                    Clicked="OnListenLiveClicked"
-                    BackgroundColor="#2D313B"
-                    TextColor="#F8FAFC"
-                    ImageSource="eye_tracking.svg"
-                    FontAttributes="Bold"
-                    CornerRadius="12"
-                    HeightRequest="58" />
-
-            <Button Text="APPELER LES URGENCES"
+            <Button x:Name="CallEmergencyButton"
+                    Text="APPELER LES URGENCES"
                     Clicked="OnCallEmergencyClicked"
                     BackgroundColor="#FF2328"
                     TextColor="#FFFFFF"
@@ -69,7 +61,7 @@
                     CornerRadius="12"
                     HeightRequest="62" />
 
-            <Button Text="Ignorer l'alerte"
+            <Button Text="Désactiver l'alarme"
                     Clicked="OnDismissClicked"
                     TextColor="#8B8B8B"
                     BackgroundColor="Transparent"

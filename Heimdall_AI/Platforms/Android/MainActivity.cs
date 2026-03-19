@@ -1,4 +1,5 @@
 ﻿using Android.App;
+using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using Android;
@@ -11,6 +12,16 @@ namespace Heimdall_AI
         protected override void OnCreate(Bundle? savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+
+            var serviceIntent = new Intent(this, typeof(HeimdallForegroundService));
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
+            {
+                StartForegroundService(serviceIntent);
+            }
+            else
+            {
+                StartService(serviceIntent);
+            }
 
             if (Build.VERSION.SdkInt >= BuildVersionCodes.Tiramisu
                 && CheckSelfPermission(Manifest.Permission.PostNotifications) != Permission.Granted)
