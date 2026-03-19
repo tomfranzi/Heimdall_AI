@@ -123,6 +123,11 @@ Le déploiement iOS nécessite un **Mac avec Xcode**, un certificat et un profil
 
 ## 🤝 Contribution
 
+Tom
+Alex
+Mathys
+Ali
+
 Les améliorations UI/UX, la robustesse MQTT et la stabilité multi-plateforme sont les axes prioritaires.
 
 Si vous proposez des changements, privilégiez :
