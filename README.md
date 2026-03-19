@@ -123,10 +123,12 @@ Le déploiement iOS nécessite un **Mac avec Xcode**, un certificat et un profil
 
 ## 🤝 Contribution
 
-Tom
-Alex  https://github.com/alexdhh/heimdallai_detection.git
-Mathys
-Ali
+---
+
+- Tom
+- Alex  https://github.com/alexdhh/heimdallai_detection.git
+- Mathys
+- Ali
 
 Les améliorations UI/UX, la robustesse MQTT et la stabilité multi-plateforme sont les axes prioritaires.
 
