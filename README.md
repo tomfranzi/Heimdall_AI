@@ -1,7 +1,7 @@
 # Heimdall AI
 
 <p align="center">
-  <img src="Heimdall_AI/Resources/Icone/neurology.svg" alt="Heimdall AI" width="84" />
+  <img src="Heimdall_AI/Resources/Icone/neurology.png" alt="Heimdall AI" width="84" />
 </p>
 
 <p align="center">
